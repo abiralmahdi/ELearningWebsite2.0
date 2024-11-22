@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="jumbotron">
+    <h1>Welcome to our Ecommerce Website!</h1>
+    <p>Discover amazing products and shop with confidence.</p>
+    <a href="/products" class="btn btn-primary">Shop Now</a>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Featured Products</h2>
+            <p>Check out our handpicked selection of featured products.</p>
+            <a href="/products/featured" class="btn btn-secondary">View Featured Products</a>
+        </div>
+        <div class="col-md-4">
+            <h2>New Arrivals</h2>
+            <p>Explore the latest additions to our product catalog.</p>
+            <a href="/products/new" class="btn btn-secondary">View New Arrivals</a>
+        </div>
+        <div class="col-md-4">
+            <h2>Special Offers</h2>
+            <p>Don't miss out on our exclusive special offers.</p>
+            <a href="/products/special-offers" class="btn btn-secondary">View Special Offers</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
