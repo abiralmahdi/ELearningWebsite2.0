@@ -5,7 +5,14 @@ from .models import *
 def home(request):
     categories = Categories.objects.all() # Fetching all the categories
     offers = Offers.objects.all() # Fetching all the offers
-    return render(request, 'index.html', {"categories":categories, "offers":offers})
+    discountedPrices = [] # Storing the discounted prices
+    for offer in offers:
+        discount = offer.discount
+        product = offer.product
+        price = product.price
+        discountedPrice = price - (price * discount / 100) # Calculating the discounted price
+        discountedPrices.append(discountedPrice)
+    return render(request, 'index.html', {"categories":categories, "offers":offers, "discounts":discountedPrices})
 
 # contact page
 def contact(request):
