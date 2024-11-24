@@ -133,4 +133,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Ensure static and media files are properly served
 STATIC_URL = '/static/'
 
-
