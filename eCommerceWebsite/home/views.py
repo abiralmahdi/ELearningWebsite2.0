@@ -27,7 +27,15 @@ def contact(request):
 
 # offers page
 def offers(request):
-    return render(request, 'about.html')
+    offers = Offers.objects.all() # Fetching all the offers
+    discountedPrices = [] # Storing the discounted prices
+    for offer in offers:
+        discount = offer.discount
+        product = offer.product
+        price = product.price
+        discountedPrice = price - (price * discount / 100) # Calculating the discounted price
+        discountedPrices.append(discountedPrice)
+    return render(request, 'offers.html', {"offers", offers})
 
 # products list page
 def products_page(request, category):
