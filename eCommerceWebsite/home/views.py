@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 
 # home page
@@ -16,16 +16,23 @@ def home(request):
 
 # contact page
 def contact(request):
+    if request.method =='POST':
+        name = request.POST['name']
+        message = request.POST['message']
+        email = request.POST['email']
+        Contact.objects.create(name=name, email=email, message=message)
+        return redirect("/")
+
     return render(request, 'contact.html')
+
+# offers page
+def offers(request):
+    return render(request, 'about.html')
 
 # products list page
 def products_page(request, category):
     products = Products.objects.filter(category=category) # Fetching all the products in tge specific category
     return render(request, 'products.html', {"products":products})
-
-# offers page
-def offers(request):
-    return render(request, 'about.html')
 
 # individual products page
 def indiv_product(request, category, product):
