@@ -37,6 +37,25 @@ def offers(request):
         discountedPrices.append(discountedPrice)
     return render(request, 'offers.html', {"offers", offers})
 
+
+# offers page for each category
+def offers_per_category(request, category):
+    products = Products.objects.filter(category=category) # fetching all the products of a category
+    offers_array = []
+    for product in products:
+        if Offers.objects.get(product=product).exists():
+            offers_array.append(Offers.objects.get(product=product))
+
+    discountedPrices = [] # Storing the discounted prices
+    for offer in offers_array:
+        discount = offer.discount
+        product = offer.product
+        price = product.price
+        discountedPrice = price - (price * discount / 100) # Calculating the discounted price
+        discountedPrices.append(discountedPrice)
+    return render(request, 'offers.html', {"offers", offers_array})
+
+
 # products list page
 def products_page(request, category):
     products = Products.objects.filter(category=category) # Fetching all the products in tge specific category
