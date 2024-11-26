@@ -230,6 +230,7 @@ def checkout(amount, trans_id):
     except requests.exceptions.RequestException as e:
         print("An error occurred:", e)
 
+# Redirects to the online payment gateway url
 @csrf_exempt
 def trigger_checkout(request, amount):
     transanction = Transanction.objects.create(user=request.user, amount=int(float(amount)), date=datetime.today())
