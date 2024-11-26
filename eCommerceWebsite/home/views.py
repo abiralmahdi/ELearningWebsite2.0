@@ -1,18 +1,24 @@
 from django.shortcuts import render, redirect
 from .models import *
+from django.contrib.auth.decorators import login_required
 
 # home page
 def home(request):
     categories = Categories.objects.all() # Fetching all the categories
     offers = Offers.objects.all() # Fetching all the offers
     discountedPrices = [] # Storing the discounted prices
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
+
     for offer in offers:
         discount = offer.discount
         product = offer.product
         price = product.price
         discountedPrice = price - (price * discount / 100) # Calculating the discounted price
         discountedPrices.append(discountedPrice)
-    return render(request, 'index.html', {"categories":categories, "offers":offers, "discounts":discountedPrices})
+    return render(request, 'index.html', {"categories":categories, "offers":offers, "discounts":discountedPrices, "cart_items":cart_items, "price":price})
 
 # contact page
 def contact(request):
@@ -22,8 +28,11 @@ def contact(request):
         email = request.POST['email']
         Contact.objects.create(name=name, email=email, message=message)
         return redirect("/")
-
-    return render(request, 'contact.html')
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
+    return render(request, 'contact.html',{"cart_items":cart_items, "price":price})
 
 # offers page
 def offers(request):
@@ -35,11 +44,19 @@ def offers(request):
         price = product.price
         discountedPrice = price - (price * discount / 100) # Calculating the discounted price
         discountedPrices.append(discountedPrice)
-    return render(request, 'offers.html', {"offers", offers})
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
+    return render(request, 'offers.html', {"offers": offers, "cart_items":cart_items, "price":price})
 
 
 # offers page for each category
 def offers_per_category(request, category):
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
     products = Products.objects.filter(category=category) # fetching all the products of a category
     offers_array = []
     for product in products:
@@ -53,21 +70,39 @@ def offers_per_category(request, category):
         price = product.price
         discountedPrice = price - (price * discount / 100) # Calculating the discounted price
         discountedPrices.append(discountedPrice)
-    return render(request, 'offers.html', {"offers", offers_array})
+    
+    return render(request, 'offers.html', {"offers": offers_array, "cart_items":cart_items, "price":price})
 
 
 # products list page
 def products_page(request, category):
     products = Products.objects.filter(category=category) # Fetching all the products in tge specific category
-    return render(request, 'products.html', {"products":products})
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
+    return render(request, 'products.html', {"products":products, "cart_items":cart_items, "price":price})
 
 # individual products page
 def indiv_product(request, category, product):
     product_ = Products.objects.get(id=product) # Fetching the product matching with the relevant id
-    return render(request, 'indiv_product.html', {"product":product_})
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
+    if Cart.objects.filter(product=product_, user=request.user).exists():
+        in_cart = True
+    else:
+        in_cart = False
+    return render(request, 'indiv_product.html', {"product":product_, "in_cart":in_cart, "cart_items":cart_items, "price":price})
 
 # Adds products to the DB in a specific category
-def addProducts(request, category):
+@login_required
+def add_products(request, category):
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
     if request.method == "POST": # If the form method is POST
         name = request.POST['name']
         description = request.POST['description']
@@ -82,7 +117,12 @@ def addProducts(request, category):
     return render(request, 'addProducts.html')
 
 # Adds categories to the DB
-def addCategory(request):
+@login_required
+def add_category(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
     if request.method == "POST": # If the form method is POST
         name = request.POST['name']
         description = request.POST['description']
@@ -93,7 +133,12 @@ def addCategory(request):
     return render(request, 'addCategory.html')
 
 # Adds an Offer to an existing product
-def addOffer(request):
+@login_required
+def add_offer(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
     if request.method == "POST": # If the form method is POST
         product = request.POST['product']
         discount = request.POST['discount']
@@ -105,12 +150,18 @@ def addOffer(request):
     return render(request, 'addOffer.html')
 
 # Adds a product to the cart of a specific user
-def addToCart(request, product):
-    if request.method == "POST": # If the form method is POST
-        quantity = request.POST['quantity']
-        user = request.POST['user']
-        product = Products.objects.get(id=product)
-        cart = Cart(product=product, quantity=quantity, user=user)
-        cart.save()
-        return render(request, 'addToCart.html', {"message":"Product added to cart successfully"})
-    return render(request, 'addToCart.html')
+@login_required
+def add_to_cart(request, product, qty):
+    cart_items = Cart.objects.filter(user=request.user)
+    price = 0
+    for item in cart_items:
+        price = price + item.product.price*item.quantity
+    quantity = qty
+    user = request.user
+    product = Products.objects.get(id=product)
+    cart = Cart(product=product, quantity=quantity, user=user)
+    cart.save()
+        
+    if Cart.objects.filter(product=product, user=user).exists():
+        return redirect("/category/"+str(product.category.id)+"/"+str(product.id))
+    return redirect("/category/"+str(product.category.id)+"/"+str(product.id))
