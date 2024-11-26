@@ -1,8 +1,14 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from .models import *
 from django.contrib.auth.decorators import login_required
-
+import requests
+import random
+import string
+from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
 # home page
+@csrf_exempt
 def home(request):
     categories = Categories.objects.all() # Fetching all the categories
     offers = Offers.objects.all() # Fetching all the offers
@@ -152,16 +158,80 @@ def add_offer(request):
 # Adds a product to the cart of a specific user
 @login_required
 def add_to_cart(request, product, qty):
-    cart_items = Cart.objects.filter(user=request.user)
+    cart_items = Cart.objects.filter(user=request.user) # fetch all the cart items
+    # count the total price of all the items in the cart
     price = 0
-    for item in cart_items:
+    for item in cart_items: # iterate over each items in cart and get the prices
         price = price + item.product.price*item.quantity
+
     quantity = qty
     user = request.user
     product = Products.objects.get(id=product)
-    cart = Cart(product=product, quantity=quantity, user=user)
+
+    cart = Cart(product=product, quantity=quantity, user=user) # save the items in the cart
     cart.save()
-        
+    # if user has already a cart, return to the previous url  
     if Cart.objects.filter(product=product, user=user).exists():
         return redirect("/category/"+str(product.category.id)+"/"+str(product.id))
     return redirect("/category/"+str(product.category.id)+"/"+str(product.id))
+
+
+# Generates random character code
+def generate_random_code(length=8):
+    # Choose from uppercase letters, lowercase letters, and digits
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
+
+@csrf_exempt
+def checkout(amount, trans_id):
+    # API endpoint
+    url = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php"
+
+    # Parameters for the POST request
+    data = {
+        "store_id": "abira67457d735b0e8",
+        "store_passwd": "abira67457d735b0e8@ssl",
+        "total_amount": amount,
+        "currency": "BDT",
+        "tran_id": trans_id,
+        "success_url": "http://127.0.0.1:8000",
+        "fail_url": "http://127.0.0.1:8000/fail",
+        "cancel_url": "http://127.0.0.1:8000/cancel",
+        "cus_name": "Customer Name",
+        "cus_email": "cust@yahoo.com",
+        "cus_add1": "Dhaka",
+        "cus_add2": "Dhaka",
+        "cus_city": "Dhaka",
+        "cus_state": "Dhaka",
+        "cus_postcode": "1000",
+        "cus_country": "Bangladesh",
+        "cus_phone": "01711111111",
+        "cus_fax": "01711111111",
+        "shipping_method":"NO",
+        "product_name": "ABC",
+        "product_category": "ABC",
+        "product_profile": "general"
+    }
+
+    # Make the POST request
+    try:
+        response = requests.post(url, data=data)
+        
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Parse and handle the response
+            print("Response Status:", response.status_code)
+            print("Response Data:", response.json())  # Assumes the response is in JSON format
+            return response.json()
+        else:
+            print("Request Failed:", response.status_code)
+            print("Response Content:", response.text)
+
+    except requests.exceptions.RequestException as e:
+        print("An error occurred:", e)
+
+@csrf_exempt
+def trigger_checkout(request, amount):
+    transanction = Transanction.objects.create(user=request.user, amount=int(float(amount)), date=datetime.today())
+    response = checkout(int(float(amount)), transanction.id)
+    return redirect(response['redirectGatewayURL'])

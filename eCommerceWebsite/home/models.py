@@ -45,4 +45,11 @@ class Contact(models.Model):
     def __str__(self):
         return self.name + " - " + self.message
 
+class Transanction(models.Model):
+    user = models.CharField(max_length=100)
+    amount = models.FloatField()
+    date = models.DateTimeField()
+
+    def __str__(self):
+        return self.user + " - " + str(self.amount) + " - " + str(self.date)
     
