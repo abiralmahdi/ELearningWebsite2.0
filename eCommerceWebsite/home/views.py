@@ -7,6 +7,9 @@ import random
 import string
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+
+
 # home page
 @csrf_exempt
 def home(request):
@@ -14,6 +17,7 @@ def home(request):
     offers = Offers.objects.all() # Fetching all the offers
     discountedPrices = [] # Storing the discounted prices
     cart_items = Cart.objects.filter(user=request.user)
+    # calculate the total price of the items in cart
     price = 0
     for item in cart_items:
         price = price + item.product.price*item.quantity
@@ -183,7 +187,7 @@ def generate_random_code(length=8):
     return ''.join(random.choice(characters) for _ in range(length))
 
 @csrf_exempt
-def checkout(amount, trans_id):
+def checkout(amount, trans_id, user_id):
     # API endpoint
     url = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php"
 
@@ -194,9 +198,9 @@ def checkout(amount, trans_id):
         "total_amount": amount,
         "currency": "BDT",
         "tran_id": trans_id,
-        "success_url": "http://127.0.0.1:8000",
-        "fail_url": "http://127.0.0.1:8000/fail",
-        "cancel_url": "http://127.0.0.1:8000/cancel",
+        "success_url": "http://127.0.0.1:8000/success/"+str(user_id),
+        "fail_url": "http://127.0.0.1:8000/fail/",
+        "cancel_url": "http://127.0.0.1:8000/cancel/",
         "cus_name": "Customer Name",
         "cus_email": "cust@yahoo.com",
         "cus_add1": "Dhaka",
@@ -233,6 +237,20 @@ def checkout(amount, trans_id):
 # Redirects to the online payment gateway url
 @csrf_exempt
 def trigger_checkout(request, amount):
-    transanction = Transanction.objects.create(user=request.user, amount=int(float(amount)), date=datetime.today())
-    response = checkout(int(float(amount)), transanction.id)
+    cart_items = Cart.objects.filter(user=request.user)
+    cart_items =  list(cart_items )
+    transanction = Transanction.objects.create(user=request.user, amount=int(float(amount)), date=datetime.today(), items=str(cart_items))
+    response = checkout(int(float(amount)), transanction.id, request.user.id)
     return redirect(response['redirectGatewayURL'])
+
+@csrf_exempt
+def successful_transanction(request, user_id):
+    user = User.objects.get(id=int(user_id))
+    cart_items = Cart.objects.filter(user=user)
+    for item in cart_items:
+        item.delete()
+    return redirect("/")
+
+@csrf_exempt
+def failed_transanction(request):
+    return JsonResponse({"status": "Transanctions failed. Please try again some other time."})

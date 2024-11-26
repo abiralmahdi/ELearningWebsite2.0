@@ -49,6 +49,7 @@ class Transanction(models.Model):
     user = models.CharField(max_length=100)
     amount = models.FloatField()
     date = models.DateTimeField()
+    items = models.CharField(max_length=5000, default="[]")
 
     def __str__(self):
         return self.user + " - " + str(self.amount) + " - " + str(self.date)
