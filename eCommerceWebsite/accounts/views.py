@@ -3,6 +3,11 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from home.models import *
+from .models import *
+import datetime
 
 # Create your views here.
 
@@ -43,3 +48,53 @@ def register(request):
 def log_out(request):
     logout(request)
     return redirect("/")
+
+@login_required
+def add_products(request):
+    if request.user.is_superuser:
+        categories = Categories.objects.all()
+        if request.method == 'POST':
+            # Fetching the data from the form
+            name = request.POST['name']
+            price = request.POST['price']
+            description = request.POST['description']
+            category = request.POST['category']
+            discount = request.POST['discount']
+            discounted_price = float(price) - float(discount)*float(price)/100
+            image = request.FILES['img']
+            # Creating a new product
+            product = Products(name=name, price=price, description=description, discounted_price=discounted_price, category=Categories.objects.get(id=category), discount=discount, image=image)
+            product.save()
+            
+            if discount != "":
+                offer = Offers(product=product, discount=discount, start_date=datetime.datetime.now(), end_date=datetime.datetime.now() + datetime.timedelta(days=30))
+                offer.save()
+            return redirect("/")
+        return render(request, "add_products.html", {"category":categories})
+    else:
+        return HttpResponse("Not an Admin")
+
+
+@login_required
+def add_offers(request, product):
+    product_ = Products.objects.get(id=product)
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            discount = request.POST['discount']
+            # Creating a new offer
+            offer = Offers(product=product_, discount=float(discount), start_date=datetime.datetime.now(), end_date=datetime.datetime.now() + datetime.timedelta(days=30))
+            offer.save()
+            product_.discounted_price = float(product_.price) - float(discount)*float(product_.price)/100
+            product_.discount = float(discount)
+            product_.save()
+            return redirect("/accounts/admin_dashboard#offers")
+        return render(request, "add_offers.html", {"product":product_})
+    return render(request, "add_offers.html", {"product":product_})
+
+@login_required
+def view_dashboard(request):
+    if request.user.is_superuser:
+        products = Products.objects.all()
+        orders = Transanction.objects.all()
+        discounts = Offers.objects.all()
+        return render(request, "view-products.html", {"products":products, "orders":orders, "offers":discounts})

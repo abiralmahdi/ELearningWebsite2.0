@@ -47,13 +47,6 @@ def contact(request):
 # offers page
 def offers(request):
     offers = Offers.objects.all() # Fetching all the offers
-    discountedPrices = [] # Storing the discounted prices
-    for offer in offers:
-        discount = offer.discount
-        product = offer.product
-        price = product.price
-        discountedPrice = price - (price * discount / 100) # Calculating the discounted price
-        discountedPrices.append(discountedPrice)
     cart_items = Cart.objects.filter(user=request.user)
     price = 0
     for item in cart_items:
@@ -220,7 +213,6 @@ def checkout(amount, trans_id, user_id):
     # Make the POST request
     try:
         response = requests.post(url, data=data)
-        
         # Check if the request was successful
         if response.status_code == 200:
             # Parse and handle the response

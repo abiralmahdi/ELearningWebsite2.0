@@ -16,6 +16,7 @@ class Products(models.Model):
     discount = models.FloatField() # Percentage of discount
     category = models.ForeignKey(Categories, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='images/products/')
+    discounted_price = models.FloatField(default=0.0)
 
     def __str__(self):
         return self.name
