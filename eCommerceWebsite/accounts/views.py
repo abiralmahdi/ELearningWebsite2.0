@@ -84,6 +84,7 @@ def add_offers(request, product):
             # Creating a new offer
             offer = Offers(product=product_, discount=float(discount), start_date=datetime.datetime.now(), end_date=datetime.datetime.now() + datetime.timedelta(days=30))
             offer.save()
+            # updating the product model with the offer
             product_.discounted_price = float(product_.price) - float(discount)*float(product_.price)/100
             product_.discount = float(discount)
             product_.save()
