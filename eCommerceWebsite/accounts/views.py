@@ -99,3 +99,12 @@ def view_dashboard(request):
         orders = Transanction.objects.all()
         discounts = Offers.objects.all()
         return render(request, "view-products.html", {"products":products, "orders":orders, "offers":discounts})
+    
+def user_dashboard(request):
+    if request.user.is_authenticated:
+        orders = Transanction.objects.filter(user=request.user.username)
+        total_money_spent = 0
+        for order in orders:
+            total_money_spent = total_money_spent + float(order.amount)
+        return render(request, "user-dashboard.html", {"orders":orders, "total_money_spent":total_money_spent})
+    return redirect("login")

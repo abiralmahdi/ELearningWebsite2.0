@@ -5,25 +5,19 @@
         <div class="card text-white bg-primary mb-3 col m-3" style="max-width: 13rem;">
           <h5 class="card-header">Total Number of Orders</h5>
           <div class="card-body">
-            <h5 class="card-text text-center" style="font-size: 55px;">{{no_of_orders}}</h5>
+            <h5 class="card-text text-center" style="font-size: 55px;">{{orders|length}}</h5>
           </div>
         </div>
         <div class="card text-dark bg-warning mb-3 col m-3" style="max-width: 13rem;">
           <h5 class="card-header">Total Items Bought</h5>
           <div class="card-body">
-            <h5 class="card-text text-center" style="font-size: 55px;">23</h5>
+            <h5 class="card-text text-center" style="font-size: 55px;">{{orders|length}}</h5>
           </div>
         </div>
         <div class="card text-white bg-danger mb-3 col m-3" style="max-width: 13rem;">
           <h5 class="card-header">Total Money Spent</h5>
           <div class="card-body">
-            <h5 class="card-text text-center my-auto" style="font-size: 25px;">Tk. 23,450</h5>
-          </div>
-        </div>
-        <div class="card text-white bg-dark mb-3 col m-3" style="max-width: 13rem;">
-          <h5 class="card-header">Due Invoices</h5>
-          <div class="card-body">
-            <h5 class="card-text text-center" style="font-size: 55px;">2</h5>
+            <h5 class="card-text text-center my-auto" style="font-size: 25px;">Tk. {{total_money_spent}}</h5>
           </div>
         </div>
       </div>
@@ -38,15 +32,26 @@
               <th>Sno</th>
               <th>Purchase ID</th>
               <th>Date and Time</th>
-              <th>Products and Qty</th>
-              <th>Individual Price</th>
-              <th>Discounts</th>
+              <!-- <th>Products and Qty</th> -->
+              <!-- <th>Individual Price</th> -->
               <th>Total Cost</th>
-              <th>Payment Method</th>
             </tr>
           </thead>
           <tbody id='tableBody'>
-
+            {% for purchase in orders %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ purchase.id }}</td>
+              <td>{{ purchase.date }}</td>
+              <!-- <td>
+                {% for product in purchase.products %}
+                {{ product.name }} - {{ product.quantity }}<br>
+                {% endfor %}
+              </td> -->
+              <!-- <td>{{ purchase.individual_price }}</td> -->
+              <td>{{ purchase.amount }}</td>
+            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
