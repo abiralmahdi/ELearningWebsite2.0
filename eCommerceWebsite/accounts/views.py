@@ -1,3 +1,24 @@
+
+"""
+ShopEasy E Commerce Website
+------------------------------
+Author: Abir, Tamim, Saidul
+Date: 2024-12-02
+------------------------------
+Description: 
+This is the views.py file for the accounts app.
+This file contains the following views:
+    - log_in: This view is used to log in the user.
+    - register: This view is used to register a new user.
+    - log_out: This view is used to log out the user.
+    - add_products: This view is used to add products to the website.
+    - add_offers: This view is used to add offers to the products.
+    - view_dashboard: This view is used to view the admin dashboard.
+    - user_dashboard: This view is used to view the user dashboard.
+------------------------------
+"""
+
+
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
@@ -12,6 +33,12 @@ import datetime
 # Create your views here.
 
 def log_in(request):
+    """
+    This view is used to log in the user.
+    If the user is authenticated, the user is redirected to the home page.
+    If the user is not authenticated, the user is redirected to the login page with an error message.
+    
+    """
     if request.method == 'POST':
         # Fetching the data from the form
         username = request.POST['email']
@@ -27,6 +54,11 @@ def log_in(request):
     return render(request, 'login.html')
 
 def register(request):
+    """
+    This view is used to register a new user.
+    If the passwords do not match, the user is redirected to the register page with an error message.
+    If the user is successfully registered, the user is redirected to the login page.
+    """
     if request.method == 'POST':
         # Fetching the data from the form
         password = request.POST['password']
@@ -46,11 +78,18 @@ def register(request):
     return render(request, "register.html")
 
 def log_out(request):
+    """
+    This view is used to log out the user."""
     logout(request)
     return redirect("/")
 
 @login_required
 def add_products(request):
+    """
+    This view is used to add products to the website.
+    If the user is not an admin, the user is redirected to the home page with an error message.
+    If the user is an admin, the user is redirected to the add products page.
+    """
     if request.user.is_superuser:
         categories = Categories.objects.all()
         if request.method == 'POST':
@@ -80,6 +119,11 @@ def add_products(request):
 
 @login_required
 def add_offers(request, product):
+    """
+    This view is used to add offers to the products.
+    If the user is not an admin, the user is redirected to the home page with an error message.
+    If the user is an admin, the user is redirected to the add offers page.
+    """
     product_ = Products.objects.get(id=product)
     if request.user.is_superuser:
         if request.method == 'POST':
@@ -96,7 +140,12 @@ def add_offers(request, product):
     return render(request, "add_offers.html", {"product":product_})
 
 @login_required
-def view_dashboard(request):
+def view_dashboard(request): 
+    """
+    This view is used to view the admin dashboard.
+    If the user is not an admin, the user is redirected to the home page with an error message.
+    If the user is an admin, the user is redirected to the view products page.
+    """
     if request.user.is_superuser:
         products = Products.objects.all()
         orders = Transanction.objects.all()
@@ -104,6 +153,11 @@ def view_dashboard(request):
         return render(request, "view-products.html", {"products":products, "orders":orders, "offers":discounts})
     
 def user_dashboard(request):
+    """
+    This view is used to view the user dashboard.
+    If the user is not authenticated, the user is redirected to the login page.
+    If the user is authenticated, the user is redirected to the user dashboard.
+    """
     if request.user.is_authenticated:
         orders = Transanction.objects.filter(user=request.user.username)
         total_money_spent = 0

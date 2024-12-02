@@ -1,3 +1,27 @@
+"""
+ShopEasy E Commerce Website
+------------------------------
+Author: Abir, Tamim, Saidul
+Date: 2024-12-02
+------------------------------
+Description:
+This is the views.py file for the home app.
+This file contains the following views:
+    - home: This view is used to render the home page.
+    - contact: This view is used to render the contact page.
+    - offers: This view is used to render the offers page.
+    - offers_per_category: This view is used to render the offers page for each category.
+    - products_page: This view is used to render the products list page.
+    - indiv_product: This view is used to render the individual products page.
+    - add_to_cart: This view is used to add a product to the cart of a specific user.
+    - generate_random_code: This function is used to generate a random character code.
+    - checkout: This function is used to checkout the items in the cart.
+    - trigger_checkout: This view is used to trigger the checkout process.
+    - successful_transanction: This view is used to handle successful transactions.
+    - failed_transanction: This view is used to handle failed transactions.
+------------------------------
+"""
+
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import *
@@ -13,6 +37,11 @@ from django.contrib.auth.models import User
 # home page
 @csrf_exempt
 def home(request):
+    """
+    This view is used to render the home page.
+    It fetches all the categories and offers from the database.
+    It also fetches the cart items of the user and calculates the total price of the items in the cart.
+    """
     categories = Categories.objects.all() # Fetching all the categories
     offers = Offers.objects.all() # Fetching all the offers
     cart_items = Cart.objects.filter(user=request.user)
@@ -26,6 +55,11 @@ def home(request):
 
 # contact page
 def contact(request):
+    """
+    This view is used to render the contact page.
+    It fetches the cart items of the user and calculates the total price of the items in the cart.
+    It also handles the form submission and saves the contact details in the database.
+    """
     if request.method =='POST':
         name = request.POST['name']
         message = request.POST['message']
@@ -40,6 +74,11 @@ def contact(request):
 
 # offers page
 def offers(request):
+    """
+    This view is used to render the offers page.
+    It fetches all the offers from the database.
+    It also fetches the cart items of the user and calculates the total price of the items in the cart.
+    """
     offers = Offers.objects.all() # Fetching all the offers
     cart_items = Cart.objects.filter(user=request.user)
     price = 0
@@ -50,6 +89,11 @@ def offers(request):
 
 # offers page for each category
 def offers_per_category(request, category):
+    """
+    This view is used to render the offers page for each category.
+    It fetches all the products of a specific category from the database.
+    It also fetches the cart items of the user and calculates the total price of the items in the cart.
+    """
     cart_items = Cart.objects.filter(user=request.user)
     price = 0
     for item in cart_items:
@@ -73,6 +117,12 @@ def offers_per_category(request, category):
 
 # products list page
 def products_page(request, category):
+    """
+    This view is used to display the products of a specific category
+    It fetches all the products of a specific category from the database.
+    It also fetches the cart items of the user and calculates the total price of the items in the cart.
+
+    """
     products = Products.objects.filter(category=category) # Fetching all the products in tge specific category
     cart_items = Cart.objects.filter(user=request.user)
     price = 0
@@ -82,6 +132,11 @@ def products_page(request, category):
 
 # individual products page
 def indiv_product(request, category, product):
+    """
+    This view is used to display the individual product page.
+    It fetches the product matching with the relevant id from the database.
+    It also fetches the cart items of the user and calculates the total price of the items in the cart.
+    """
     product_ = Products.objects.get(id=product) # Fetching the product matching with the relevant id
     cart_items = Cart.objects.filter(user=request.user)
     price = 0
@@ -98,6 +153,11 @@ def indiv_product(request, category, product):
 # Adds a product to the cart of a specific user
 @login_required
 def add_to_cart(request, product, qty):
+    """
+    This view is used to add a product to the cart of a specific user.
+    It fetches the product matching with the relevant id from the database.
+    It also fetches the cart items of the user and calculates the total price of the items in the cart.
+    """
     cart_items = Cart.objects.filter(user=request.user) # fetch all the cart items
     # count the total price of all the items in the cart
     price = 0
@@ -118,12 +178,19 @@ def add_to_cart(request, product, qty):
 
 # Generates random character code
 def generate_random_code(length=8):
+    """
+    This function is used to generate a random character code.
+    """
     # Choose from uppercase letters, lowercase letters, and digits
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
 
 @csrf_exempt
 def checkout(amount, trans_id, user_id):
+    """
+    This function is used to checkout the items in the cart.
+    It makes a POST request to the online payment gateway API.
+    """
     # API endpoint
     url = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php"
 
@@ -172,6 +239,10 @@ def checkout(amount, trans_id, user_id):
 # Redirects to the online payment gateway url
 @csrf_exempt
 def trigger_checkout(request, amount):
+    """
+    This view is used to trigger the checkout process.
+    It fetches the cart items of the user and calculates the total price of the items in the cart.
+    """
     cart_items = Cart.objects.filter(user=request.user)
     cart_items =  list(cart_items )
     cart_list = [items.product.name for items in cart_items]
@@ -183,6 +254,10 @@ def trigger_checkout(request, amount):
 
 @csrf_exempt
 def successful_transanction(request, user_id):
+    """
+    This view is used to handle successful transactions.
+    It fetches the cart items of the user and calculates the total price of the items in the cart.
+    """
     user = User.objects.get(id=int(user_id))
     cart_items = Cart.objects.filter(user=user)
     for item in cart_items:
@@ -191,4 +266,7 @@ def successful_transanction(request, user_id):
 
 @csrf_exempt
 def failed_transanction(request):
+    """
+    This view is used to handle failed transactions.
+    """
     return JsonResponse({"status": "Transanctions failed. Please try again some other time."})

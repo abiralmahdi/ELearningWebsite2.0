@@ -17,16 +17,11 @@
   <header class="text-gray-400 fixed-top bg-black body-font">
     <div class="container mx-auto flex flex-wrap flex-col py-3 md:flex-row items-center">
       <a class="flex title-font font-medium items-center text-white md:mb-0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round"
-          stroke-linejoin="round" stroke-width="2" class="w-10 h-10 text-white p-2 bg-green-500 rounded-full"
-          viewBox="0 0 24 24">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-        </svg>
-        <span class="ml-3 text-xl">Tailblocks</span>
+        <img src="/static/images/Logo.png" class="w-10 h-10 rounded-full">
+        <span class="ml-3 text-xl  text-decoration-none">ShopEasy</span>
       </a>
       <nav class="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center">
         <a class="mx-5 text-success text-decoration-none" href="/">Home</a>
-        <a class="mx-5 text-success text-decoration-none" href="/offers">Offers</a>
         <a class="mx-5 text-success text-decoration-none" href="/contact">Contact Us</a>
       </nav>
       {% if not user.is_authenticated %}
@@ -48,9 +43,9 @@
         href="/accounts/user_dashboard">
         {{user.first_name}}
       </a>
-      <a class="text-decoration-none inline-flex items-center bg-gray-800 border-0 px-3 py-1 focus:outline-none hover:bg-gray-700 rounded text-base"
+      <a class="ml-2 text-decoration-none inline-flex items-center bg-gray-800 border-0 px-3 py-1 focus:outline-none hover:bg-gray-700 rounded text-base"
         href="/accounts/logout">
-        logout
+        Logout
       </a>
       <button data-bs-toggle="modal" data-bs-target="#cartModal"
         class=" mx-3 text-decoration-none inline-flex items-center bg-green-900 border-0 px-3 py-1 focus:outline-none hover:bg-green-800 rounded text-base">
@@ -103,92 +98,16 @@
       class="container px-5 py-24 mx-auto flex md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
       <div class="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left">
         <a class="flex title-font font-medium items-center md:justify-start justify-center text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round"
-            stroke-linejoin="round" stroke-width="2" class="w-10 h-10 text-white p-2 bg-green-500 rounded-full"
-            viewBox="0 0 24 24">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-          </svg>
-          <span class="ml-3 text-xl">Tailblocks</span>
+          <img src="/static/images/Logo.png" class="w-10 h-10 rounded-full">
+          <span class="ml-3 text-xl text-decoration-none">ShopEasy</span>
         </a>
-        <p class="mt-2 text-sm text-gray-500">Air plant banjo lyft occupy retro adaptogen indego</p>
+        <p class="mt-2 text-sm text-gray-500">Your Favourite E-Commerce Platform. </p>
       </div>
-      <div class="flex-grow flex flex-wrap md:pl-20 -mb-10 md:mt-0 mt-10 md:text-left text-center">
-        <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-          <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">CATEGORIES</h2>
-          <nav class="list-none mb-10">
-            <li>
-              <a class="text-gray-400 hover:text-white">First Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Second Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Third Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Fourth Link</a>
-            </li>
-          </nav>
-        </div>
-        <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-          <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">CATEGORIES</h2>
-          <nav class="list-none mb-10">
-            <li>
-              <a class="text-gray-400 hover:text-white">First Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Second Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Third Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Fourth Link</a>
-            </li>
-          </nav>
-        </div>
-        <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-          <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">CATEGORIES</h2>
-          <nav class="list-none mb-10">
-            <li>
-              <a class="text-gray-400 hover:text-white">First Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Second Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Third Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Fourth Link</a>
-            </li>
-          </nav>
-        </div>
-        <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-          <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">CATEGORIES</h2>
-          <nav class="list-none mb-10">
-            <li>
-              <a class="text-gray-400 hover:text-white">First Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Second Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Third Link</a>
-            </li>
-            <li>
-              <a class="text-gray-400 hover:text-white">Fourth Link</a>
-            </li>
-          </nav>
-        </div>
-      </div>
+      
     </div>
     <div class="bg-gray-800 bg-opacity-75">
       <div class="container mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row">
-        <p class="text-gray-400 text-sm text-center sm:text-left">© 2020 Tailblocks —
-          <a href="https://twitter.com/knyttneve" rel="noopener noreferrer" class="text-gray-500 ml-1"
-            target="_blank">@knyttneve</a>
-        </p>
+        <p class="text-gray-400 text-sm text-center sm:text-left">© 2020 ShopEasy      </p>
         <span class="inline-flex sm:ml-auto sm:mt-0 mt-2 justify-center sm:justify-start">
           <a class="text-gray-400">
             <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5"
