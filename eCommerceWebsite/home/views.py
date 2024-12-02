@@ -15,20 +15,14 @@ from django.contrib.auth.models import User
 def home(request):
     categories = Categories.objects.all() # Fetching all the categories
     offers = Offers.objects.all() # Fetching all the offers
-    discountedPrices = [] # Storing the discounted prices
     cart_items = Cart.objects.filter(user=request.user)
     # calculate the total price of the items in cart
     price = 0
     for item in cart_items:
         price = price + item.product.price*item.quantity
+    print(price)
 
-    for offer in offers:
-        discount = offer.discount
-        product = offer.product
-        price = product.price
-        discountedPrice = price - (price * discount / 100) # Calculating the discounted price
-        discountedPrices.append(discountedPrice)
-    return render(request, 'index.html', {"categories":categories, "offers":offers, "discounts":discountedPrices, "cart_items":cart_items, "price":price})
+    return render(request, 'index.html', {"categories":categories, "offers":offers, "cart_items":cart_items, "price":price})
 
 # contact page
 def contact(request):
@@ -231,7 +225,10 @@ def checkout(amount, trans_id, user_id):
 def trigger_checkout(request, amount):
     cart_items = Cart.objects.filter(user=request.user)
     cart_items =  list(cart_items )
-    transanction = Transanction.objects.create(user=request.user, amount=int(float(amount)), date=datetime.today(), items=str(cart_items))
+    cart_list = [items.product.name for items in cart_items]
+    transanction = Transanction.objects.create(user=request.user.username, amount=int(float(amount)), date=datetime.today())
+    transanction.items['data'] = cart_list
+    transanction.save()
     response = checkout(int(float(amount)), transanction.id, request.user.id)
     return redirect(response['redirectGatewayURL'])
 

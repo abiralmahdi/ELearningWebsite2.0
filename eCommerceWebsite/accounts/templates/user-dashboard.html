@@ -32,7 +32,7 @@
               <th>Sno</th>
               <th>Purchase ID</th>
               <th>Date and Time</th>
-              <!-- <th>Products and Qty</th> -->
+              <th>Products and Qty</th>
               <!-- <th>Individual Price</th> -->
               <th>Total Cost</th>
             </tr>
@@ -43,11 +43,9 @@
               <td>{{ forloop.counter }}</td>
               <td>{{ purchase.id }}</td>
               <td>{{ purchase.date }}</td>
-              <!-- <td>
-                {% for product in purchase.products %}
-                {{ product.name }} - {{ product.quantity }}<br>
-                {% endfor %}
-              </td> -->
+              <td>
+                {{purchase.items.data}}
+              </td>
               <!-- <td>{{ purchase.individual_price }}</td> -->
               <td>{{ purchase.amount }}</td>
             </tr>
