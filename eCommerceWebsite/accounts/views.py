@@ -61,7 +61,10 @@ def add_products(request):
             category = request.POST['category']
             discount = request.POST['discount']
             discounted_price = float(price) - float(discount)*float(price)/100
-            image = request.FILES['img']
+            try:
+                image = request.FILES['img']
+            except:
+                image = "C:\\Users\\HP\\Desktop\\Course Materials\\7. 6th Semester (Summer-24)\\CSE327\\Project\\Code\\ShopEasy-Your-Favourite-Ecommerce-Platform\\eCommerceWebsite\\home\\static\\images\\kb2.jpeg"
             # Creating a new product
             product = Products(name=name, price=price, description=description, discounted_price=discounted_price, category=Categories.objects.get(id=category), discount=discount, image=image)
             product.save()
